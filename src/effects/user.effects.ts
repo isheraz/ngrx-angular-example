@@ -1,41 +1,40 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map, mergeMap, catchError } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { StorageMap } from '@ngx-pwa/local-storage';
-import { addUser, getUsers } from 'src/actions/user.actions';
+import { addUser, hydrateUsers } from 'src/actions/user.actions';
 import { UserInfo } from 'src/types';
 
 @Injectable()
 export class UserEffects {
-  constructor(private actions$: Actions, private storage: StorageMap) { }
+  constructor(private actions$: Actions, private storage: StorageMap) {}
 
   setUsers$ = createEffect(
     () => {
       console.log('========== Add User Effect ==========');
       return this.actions$.pipe(
         ofType(addUser),
-        map((action) => {
-          const users = this.storage.get('appState') as unknown as Array<UserInfo>;
-          console.log(users, action);
-          // this.storage
-          //   .set('users', new Array(...users, action as UserInfo))
-          //   .subscribe();
+        map(async (action) => {
+          this.storage.get('appState.users').subscribe((data: any) => {
+            console.log(data);
+            if(!data){
+              this.storage.set('appState.users', [action]).subscribe();
+
+              return;
+            }
+            if(data.filter((x: UserInfo) => x.fullname === action.fullname ).length === 0)
+              this.storage.set('appState.users', [...data, action]).subscribe();
+          });
         })
       );
     },
     { dispatch: false }
   );
 
-  getUsers$ = createEffect(
-    () => {
-      console.log('========== Get User Effect ==========');
-      return this.actions$.pipe(
-        ofType(getUsers),
-        map((action) => {
-          const storage = this.storage.get('appState.users') as unknown as Array<UserInfo>;
-          console.log(storage, action);
-        }));
-    },
-    { dispatch: false }
-  )
+  setHydrated$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(hydrateUsers),
+      tap( () => {this.storage.set('appState.hydrated', true).subscribe()})
+    ), {dispatch: false}
+  );
 }

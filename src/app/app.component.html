@@ -5,14 +5,13 @@
       >Store for users added to PWA and listed below</mat-card-subtitle
     >
     <mat-card-content class="welcome-card-content">
-      <mat-selection-list *ngIf="users.length > 0" #shoes [multiple]="false">
-        <mat-list-option *ngFor="let user of users" [value]="user">
-          {{ user.name }}
+      <mat-selection-list #users [multiple]="false">
+        <mat-list-option *ngFor="let user of (users$ | async )" [value]="user">
+          {{ user.fullname }}
         </mat-list-option>
       </mat-selection-list>
-      <p> {{storage$ | async}}</p>
 
-      <h2 class="no-users">
+      <h2 class="no-users" *ngIf="(users$ | async )?.length === 0">
         <p>
           <mat-icon
             aria-hidden="true"

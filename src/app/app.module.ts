@@ -33,6 +33,8 @@ import { UserEffects } from 'src/effects/user.effects';
     MaterialModules,
     BrowserAnimationsModule,
     ReactiveFormsModule,
+    StorageModule.forRoot({ IDBNoWrap: true }),
+    EffectsModule.forRoot([UserEffects]),
     StoreModule.forRoot(reducers, {
       metaReducers,
       runtimeChecks: {
@@ -41,8 +43,6 @@ import { UserEffects } from 'src/effects/user.effects';
       }
     }),
     !environment.production ? StoreDevtoolsModule.instrument({ maxAge: 25, logOnly: environment.production }) : [],
-    EffectsModule.forRoot([UserEffects]),
-    StorageModule.forRoot({ IDBNoWrap: true }),
   ],
   providers: [],
   bootstrap: [AppComponent]
