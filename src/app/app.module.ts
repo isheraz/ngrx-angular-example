@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { StoreModule } from '@ngrx/store';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
-import { StoreModule } from '@ngrx/store';
+import { MaterialModules } from 'src/material.module';
 
 @NgModule({
   declarations: [
@@ -16,11 +17,10 @@ import { StoreModule } from '@ngrx/store';
     AppRoutingModule,
     ServiceWorkerModule.register('ngsw-worker.js', {
       enabled: environment.production,
-      // Register the ServiceWorker as soon as the application is stable
-      // or after 30 seconds (whichever comes first).
       registrationStrategy: 'registerWhenStable:30000'
     }),
-    StoreModule.forRoot({}, {})
+    StoreModule.forRoot({}, {}),
+    MaterialModules
   ],
   providers: [],
   bootstrap: [AppComponent]
